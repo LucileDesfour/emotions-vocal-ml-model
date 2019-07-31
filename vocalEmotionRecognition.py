@@ -69,7 +69,12 @@ cross_df = cross_df.rename(index=str, columns={"0": "label"})
 
 cross_df = shuffle(cross_df)
 #fill empty label with 0
-cross_df = cross_df.fillna(0)
+
+print(cross_df)
+
+cross_df = cross_df.fillna('calm')
+
+print(cross_df)
 
 #Separe ma db en 2 train et test
 newdf = np.random.rand(len(cross_df)) < 0.8
@@ -188,7 +193,6 @@ def analyse_emotions(url):
   livedf2 = pd.DataFrame(data=livedf2)
   livedf2 = livedf2.stack().to_frame().T
   
-  print(livedf2)
 
   #insert a new axis
   twodim = np.expand_dims(livedf2, axis=2)
@@ -204,4 +208,5 @@ def analyse_emotions(url):
     livepreds1 = livepreds.argmax(axis=1)
     liveabc = livepreds1.astype(int).flatten()
     livepredictions = (lb.inverse_transform((liveabc)))
-    return livepredictions
+    print(livepredictions.flat[0])
+    return livepredictions.flat[0]
