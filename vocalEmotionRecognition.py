@@ -116,10 +116,10 @@ def train():
   model = Sequential()
 
   # 250 filtres convolution de taille 216
-  model.add(Conv1D(256, 5, padding='same', input_shape=(216,1)))
+  model.add(Conv1D(256, 4, padding='same', input_shape=(216,1)))
   model.add(Activation('relu'))
   model.add(Dropout(0.5))
-  model.add(Conv1D(128, 5, padding='same'))
+  model.add(Conv1D(128, 4, padding='same'))
   model.add(Activation('relu'))
   # max d'operations de mise en commun des donnees
   model.add(MaxPooling1D(pool_size=(8)))
@@ -128,7 +128,7 @@ def train():
   model.add(Flatten())
 
   #desite du modele 
-  model.add(Dense(5))
+  model.add(Dense(4))
   model.add(Activation('softmax'))
   #optimizer descente de gradient prenant en compte les variabilite
   # compile le modele en definissant la fonction de perte metrics as accuracy for classification pb
@@ -159,6 +159,8 @@ def train():
   with open("model.json", "w") as json_file:
       json_file.write(model_json)
 
+
+train()
 
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
