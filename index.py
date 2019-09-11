@@ -2,7 +2,6 @@
 
 from flask import Flask
 from flask import request
-import vocalEmotionRecognition
 from vocalEmotionRecognition import analyse_emotions
 app = Flask(__name__)
 
@@ -14,7 +13,7 @@ def hello_world():
     file = None
   if file == None:
     return 'expected wav file in body'
-  print file
+  print(file)
   filename = file.filename
   file.save('./Audio_Speech_Actors/training/' + filename)
   #analyseEmotions.analyse_emotions(wav)

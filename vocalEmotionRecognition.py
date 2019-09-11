@@ -30,20 +30,21 @@ import os
 tf.logging.set_verbosity(tf.logging.ERROR)
 pd.options.display.max_rows = 10
 pd.options.display.float_format = '{:.1f}'.format
+lb = LabelEncoder()
 
 feeling_list=[]
 training_audio = os.listdir('./Audio_Speech_Actors/training')
 
 
 for item in training_audio:
-  if item[6:-16] == '01' or 'neutral' in item:
-    feeling_list.append('calm')
-  elif item[6:-16] == '03' or 'happy' in item:
+  if item[6:-16] == '03' or 'happy' in item:
     feeling_list.append('happy') 
   elif item[6:-16] == '04' or 'sad' in item:
     feeling_list.append('sad')
   elif item[6:-16] == '05' or 'angry' in item:
     feeling_list.append('angry')
+  else:
+    feeling_list.append('calm')
 
 
 labels = pd.DataFrame(feeling_list)
@@ -70,9 +71,10 @@ cross_df = cross_df.rename(index=str, columns={"0": "label"})
 cross_df = shuffle(cross_df)
 #fill empty label with 0
 
+print("cross df")
 print(cross_df)
 
-cross_df = cross_df.fillna('calm')
+cross_df = cross_df.fillna(0)
 
 print(cross_df)
 
@@ -99,12 +101,12 @@ print(y_train)
 print("y test")
 print(y_test)
 
-lb = LabelEncoder()
 
 #convertie la liste d'entier en une classe binaire
 y_test = np_utils.to_categorical(lb.fit_transform(y_test))
 y_train = np_utils.to_categorical(lb.fit_transform(y_train))
 
+print(x_train.shape)
 
 x_traincnn = np.expand_dims(x_train, axis=2)
 x_testcnn = np.expand_dims(x_test, axis=2)
@@ -134,8 +136,13 @@ def train():
   # compile le modele en definissant la fonction de perte metrics as accuracy for classification pb
   model.compile(loss='categorical_crossentropy', optimizer=opt,metrics=['accuracy'])
 
+
+  print("train cnn")
+  print(x_traincnn)
+  print("y train")
+  print(y_train)
   #entraine le modele sur un nombre d iterations = epoch
-  cnnhistory = model.fit(x_traincnn, y_train, batch_size=16, epochs=50, validation_data=(x_testcnn, y_test))
+  cnnhistory = model.fit(x_traincnn, y_train, batch_size=None, epochs=50, validation_data=(x_testcnn, y_test))
 
 
   plt.plot(cnnhistory.history['loss'])
@@ -160,7 +167,7 @@ def train():
       json_file.write(model_json)
 
 
-train()
+#train()
 
 json_file = open('model.json', 'r')
 loaded_model_json = json_file.read()
@@ -185,7 +192,7 @@ print("Loaded model from disk")
 
 def analyse_emotions(url):
   #decoupe et resemple l'audio entrant de la meme maniere que ceux du modele pour avoir un specte de meme taille
-  X, sample_rate = librosa.load(url, res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0.5)
+  X, sample_rate = librosa.load(url, res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0)
   sample_rate = np.array(sample_rate)
   #recupere les coeficients du spectre 3 fois
   mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13),axis=0)
@@ -199,6 +206,7 @@ def analyse_emotions(url):
   #insert a new axis
   twodim = np.expand_dims(livedf2, axis=2)
 
+  print(twodim)
   #predict save old graph configuration
   global graph
   with graph.as_default():
