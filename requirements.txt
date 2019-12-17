@@ -84,7 +84,7 @@ pyparsing==2.4.2
 pyserial==3.4
 python-dateutil==2.7.5
 pytz==2019.2
-pyxdg==0.25
+pyxdg==0.26
 PyYAML==3.12
 pyzmq==17.1.2
 requests==2.18.4
